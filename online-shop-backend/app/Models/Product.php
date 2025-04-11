@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    use HasFactory;
+    
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'category_id',
+        'stock',
+    ];
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function scopeSearch($query, $search)
+    {
+        return $query->where('name', 'like', "%{$search}%")
+            ->orWhere('description', 'like', "%{$search}%");
+    }
+    public function scopeFilterByCategory($query, $categoryId)
+    {
+        return $query->where('category_id', $categoryId);
+    }
+    public function scopeFilterByPriceRange($query, $minPrice, $maxPrice)
+    {
+        return $query->whereBetween('price', [$minPrice, $maxPrice]);
+    }
+}

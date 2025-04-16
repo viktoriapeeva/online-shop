@@ -4,9 +4,11 @@ namespace App\Providers;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Order;
 use App\Policies\ProductPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\CategoryPolicy;
+use App\Policies\OrderPolicy;
 
 
 // use Illuminate\Support\Facades\Gate;
@@ -23,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
          User::class => UserPolicy::class,
          Product::class => ProductPolicy::class,
          Category::class => CategoryPolicy::class,
+         Order::class => OrderPolicy::class,
     ];
 
     /**

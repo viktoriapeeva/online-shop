@@ -23,21 +23,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    public function orders()
+    
+    public function orderProducts()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(OrderProduct::class);
     }
-    public function scopeSearch($query, $search)
-    {
-        return $query->where('name', 'like', "%{$search}%")
-            ->orWhere('description', 'like', "%{$search}%");
-    }
-    public function scopeFilterByCategory($query, $categoryId)
-    {
-        return $query->where('category_id', $categoryId);
-    }
-    public function scopeFilterByPriceRange($query, $minPrice, $maxPrice)
-    {
-        return $query->whereBetween('price', [$minPrice, $maxPrice]);
-    }
+   
 }

@@ -6,32 +6,41 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Resources\OrderResource;
 use App\Http\Requests\StoreOrderRequest;
+use App\Models\OrderProduct;
 
 class OrderController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Order::class, 'order');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $orders = Order::with(['product', 'user'])->get();
+        $orders = Order::with(['user'])->where('user_id', auth()->id())->get();
         return OrderResource::collection($orders);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        //
+    
+        $request->merge([
+            'products' => json_encode($request->input('products')),
+        ]);
+        $validated = $request->validated();
+
+        $order = Order::create($validated);
+
+        return response()->json([
+            'message' => 'Order created successfully',
+            'order' => new OrderResource($order),
+        ], 201);
     }
 
     /**
@@ -39,7 +48,10 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return new OrderResource($order->load(['product', 'user']));
+        
+        $order = Order::with(['user'])->where('user_id', auth()->id())->findOrFail($order->id);
+        return new OrderResource($order);
+
     }
 
     /**

@@ -17,9 +17,23 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $perPage = $request->input('per_page', 12); 
+        $page = $request->input('page', 1); 
+
+        if ($request->has('category')) {
+            $category = $request->input('category');
+            $products = Product::where('category_id', $category)
+                ->orderBy('id', 'desc')
+                ->paginate($perPage, ['*'], 'page', $page);
+        } else{
+            $products = Product::orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
+        }
+      
+      
+        
+
         return ProductResource::collection($products);
     }
 

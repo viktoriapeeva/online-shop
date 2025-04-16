@@ -11,21 +11,28 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'product_id',
-        'quantity',
+        'products',
         'total_price',
         'status', // e.g., 'pending', 'completed', 'canceled'
+        'shipping_address',
+        'payment_method', // e.g., 'credit_card', 'paypal'
     ];
     protected $casts = [
         'total_price' => 'decimal:2',
+        'products' => 'array', 
     ];
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function product()
+    public function orderProducts()
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(OrderProduct::class);
     }
-    
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'order_products')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
 }
